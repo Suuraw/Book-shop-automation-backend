@@ -1,0 +1,109 @@
+/* Reset basic elements */
+body, form, input, button, a {
+    font-size: large;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+.h2{
+    font-size: large;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #000000; /* Set default text color to black */
+}
+
+/* Glassmorphism effect for login container */
+.login-container {
+    background: rgba(255, 255, 255, 0.2); /* Slightly transparent white background */
+    backdrop-filter: blur(10px); /* Apply blur effect */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    transition: background 0.3s ease; /* Smooth transition for background change */
+}
+
+.login-container:hover {
+    background: rgba(255, 255, 255, 0.2); /* Keep the background same on hover */
+}
+
+.login-form h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #000000; /* Black color for headings */
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: #000000; /* Black color for labels */
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.8); /* Slightly transparent background for input fields */
+    color: #000000; /* Black text color in input fields */
+}
+
+.input-group input::placeholder {
+    color: #000000; /* Black color for placeholder text */
+    opacity: 0.7;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    background: #ffffff; /* White background for buttons */
+    font-size: 1rem;
+    font-weight: bold;
+    color: #000000; /* Black text on buttons */
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #E0E0E0; /* Light gray on hover */
+}
+
+.extra-options {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.extra-options a {
+    color: #000000; /* Black color for links */
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.extra-options a:hover {
+    color: #2d2828; /* Darker black color on hover */
+}

@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Book shop automation",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sujay kumar",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.4",
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0"
+  }
+}
