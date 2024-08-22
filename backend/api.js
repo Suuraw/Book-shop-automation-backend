@@ -1,9 +1,9 @@
+//not in use
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { error } from "console";
 
 const _dirname = dirname(fileURLToPath(import.meta.url));
 const port = 5000;
