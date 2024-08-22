@@ -3,7 +3,6 @@ import axios from "axios";
 import bodyParser from "body-parser";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { error } from "console";
 
 const _dirname = dirname(fileURLToPath(import.meta.url));
 const port = 5000;
@@ -16,7 +15,7 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {
   res.sendFile(_dirname + "/public/index.html");
 });
-//can make this post using fetch along the html+javascript file
+
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {

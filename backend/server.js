@@ -1,7 +1,7 @@
 // index.js
 import express from "express";
 import bodyParser from "body-parser";
-import authRoutes from "./routes/authRoutes.js";
+import authRoutes from "./routes/authRoutes.js";//. as it a current directory
 
 const app = express();
 const port = 3000;
