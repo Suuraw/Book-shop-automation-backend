@@ -1,77 +1,47 @@
 import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
-import { dirname } from "path";
+import path, { dirname } from "path";
 import { fileURLToPath } from "url";
+import { error } from "console";
 
 const _dirname = dirname(fileURLToPath(import.meta.url));
 const port = 5000;
-const api = express();
+const app = express();
 
-api.use(express.static("public")); // Serves static files from the 'public' directory
-api.use(bodyParser.urlencoded({ extended: true }));
-api.use(bodyParser.json());
+app.use(express.static("public")); // Serves static files from the 'public' directory
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
-api.get("/", (req, res) => {
+app.get("/", (req, res) => {
   res.sendFile(_dirname + "/public/index.html");
 });
-
-api.post("/customer/submit", async (req, res) => {
+//can make this post using fetch along the html+javascript file
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
-
   try {
-    const respond = await axios.post("http://localhost:3000/auth", {
+    const response = await axios.post("http://localhost:3000/login", {
       username,
+      password,
     });
-    if (respond.status === 200) {
-      // If authentication is successful
-      res.json({ success: true });
-    } else {
-      // If authentication fails
-      res.json({ success: false, message: "Invalid username or password" });
+    if (response.status === 200) {
+      res.render(_dirname + "/Dashboard.html");
+    } else if (response.status === 409) {
+      res.render(path.join(_dirname, "public", "login.html"), {
+        error: response.data.message,
+      }); //target: return false which fronted js will trap and display required mssg
+    } else if (response.status === 401) {
+      res.render(
+        path.join(_dirname, "public", "login.html", {
+          error: response.data.message,
+        })
+      );
     }
   } catch (error) {
-    console.error("Error occurred while authenticating:", error.message);
-    res.status(500).json({ success: false, message: "Authentication service error" });
+    return res.status(500).send({ message: "Server error" });
   }
 });
 
-api.post("/clerk/submit", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const respond = await axios.post("http://localhost:3000/auth", {
-      username,
-    });
-    if (respond.status === 200) {
-      res.json({ success: true });
-    } else {
-      res.json({ success: false, message: "Invalid username or password" });
-    }
-  } catch (error) {
-    console.error("Error occurred while authenticating:", error.message);
-    res.status(500).json({ success: false, message: "Authentication service error" });
-  }
-});
-
-api.post("/owner/submit", async (req, res) => {
-  const { username, password } = req.body;
-
-  try {
-    const respond = await axios.post("http://localhost:3000/auth", {
-      username,
-    });
-    if (respond.status === 200) {
-      res.json({ success: true });
-    } else {
-      res.json({ success: false, message: "Invalid username or password" });
-    }
-  } catch (error) {
-    console.error("Error occurred while authenticating:", error.message);
-    res.status(500).json({ success: false, message: "Authentication service error" });
-  }
-});
-
-api.listen(port, () => {
+app.listen(port, () => {
   console.log(`The API is running on port ${port}`);
 });
