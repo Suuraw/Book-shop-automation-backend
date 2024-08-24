@@ -1,78 +1,69 @@
 import db from "../db/db.js";
 import bcrypt from "bcrypt";
+import path from "path";
+
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const clerkSignup = async (req, res) => {
-  const { username, password } = req.body;
-  const authHeader = req.headers.authorization;
-  let token = null;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.split(" ")[1];
-    console.log(token);
-  } else {
-    return res.status(401).json({ messgae: "Null token" });
-  }
-
-  try {
-    const authToken = await db.query(
-      "SELECT * FROM registered WHERE token=$1",
-      [token]
-    );
-    if (authToken.rows.length === 0) {
-      return res
-        .status(401)
-        .json({ messgae: "Unregistered Clerk or wrong token ! Contact owner" });
+  const { username, password,email } = req.body;
+try{
+    const result = await db.query("SELECT * FROM clerk WHERE clerk_name=$1", [username]);
+    if (result.rows.length > 0) {
+      return res.status(409).sendFile(path.join(__dirname, '../public/login.html'), {
+        headers: { 'X-Error-Message': 'Username already exists' }
+      });
     }
-    const result = await db.query("SELECT * FROM clerk WHERE clerk_name=$1", [
-      username,
-    ]);
-    if (result.rows.length > 0)
-      return res.status(409).json({ messgae: "Username already exist" });
-    const encrptPassword = await bcrypt.hash(password, 10);
-    await db.query(
-      "INSERT INTO clerk (clerk_name,token,password) VALUES ($1,$2,$3)",
-      [username, token, encrptPassword]
-    );
+    const result1=await db.query("SELECT email FROM clerk WHERE email=$1", [email]);
+    if(result.rows.length>0)
+    return res.status(401).sendFile(path.join(__dirname,"../public/signupClerk.html"));
+   
+    const encryptedPassword = await bcrypt.hash(password, 10);
+    await db.query("INSERT INTO clerk (clerk_name, email, password) VALUES ($1, $2, $3)", [username, email, encryptedPassword]);
 
-    return res.status(200).json({ messgae: "Signup Successfull" });
+    // Set session after successful signup
+    req.session.username = username;
+    req.session.authenticated = true;
+
+    res.sendFile(path.join(__dirname, '../public/ClerkAuthentication.html'), {
+      headers: { 'X-Success-Message': 'Signup Successful' }
+    });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ messgae: "Server not responding" });
+    console.error(error);
+    return res.status(500).sendFile(path.join(__dirname, '../public/login.html'), {
+      headers: { 'X-Error-Message': 'Server not responding' }
+    });
   }
 };
 
-
-//login
 export const clerkLogin = async (req, res) => {
   const { username, password } = req.body;
-  const authHeader=req.headers.authorization;
-  let token = null;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    token = authHeader.split(" ")[1];
-    console.log(token);
-  } else {
-    return res.status(401).json({ messgae: "Null token" });
-  }
 
   try {
-    const result = await db.query("SELECT * FROM clerk WHERE clerk_name=$1", [
-      username,
-    ]);
+    const result = await db.query("SELECT * FROM clerk WHERE clerk_name=$1", [username]);
     if (result.rows.length === 0) {
-      return res.status(409).json({ message: "Invalid Username" });
+      return res.redirect('/login.html');
     }
+
     const user = result.rows[0];
-    if(user.token!==token)
-    {
-        return res.status(409).json({message:"Invalid Token"})
+    if (user.token !== token) {
+      return res.redirect('/login.html');
     }
+
     const validPassword = await bcrypt.compare(password, user.password);
     if (validPassword) {
-      return res.status(200).json({ message: "Login Successful" });
+      // Set session after successful login
+      req.session.username = username;
+      req.session.authenticated = true;
+
+      return res.redirect('/index.html'); // Relative URL
     } else {
-      return res.status(401).json({ message: "Invalid Password" });
+      return res.redirect('/login.html');
     }
   } catch (error) {
-    console.log(error)
-    return res.status(500).json("Server Not responding");
+    console.log(error);
+    return res.redirect('/login.html');
   }
 };
