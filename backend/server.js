@@ -2,9 +2,9 @@
 import express from "express";
 import bodyParser from "body-parser";
 import authRoutes from "./routes/authRoutes.js";//. as it a current directory
-import session from "express-session";
-import dotenv from "dotenv";
-
+import session from "express-session";//allows to use the middleware to set a session
+import dotenv from "dotenv";//allows us to read enviormental variable like from .env file where i inilialized secret session variable
+import getRoutes from "./routes/getRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -18,7 +18,7 @@ app.use(session({
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.use("/",getRoutes);
 app.use("/auth", authRoutes);
 
 app.listen(port, () => {
