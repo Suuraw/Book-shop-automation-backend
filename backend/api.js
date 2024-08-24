@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {
   res.sendFile(_dirname + "/public/index.html");
 });
-//can make this post using fetch along the html+javascript file
+
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
