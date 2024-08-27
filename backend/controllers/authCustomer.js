@@ -34,7 +34,8 @@ export const signup = async (req, res) => {
       "INSERT INTO users (username, email, password) VALUES($1, $2, $3)",
       [username, email, hashedPassword]
     );
-
+    req.session.username = username;
+    req.session.authenticated = true;
     return res.sendFile(path.join(__dirname, "../public/CustomerLogin.html"));
   } catch (error) {
     console.error(error); // Log the error for debugging
@@ -46,28 +47,26 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const result = await db.query("SELECT * FROM users WHERE email=$1", [
-      email,
-    ]);
+    const result = await db.query("SELECT * FROM users WHERE email=$1", [email]);
     if (result.rows.length === 0) {
       return res
-        .status(409)
+        .status(401) // Unauthorized
         .sendFile(path.join(__dirname, "../public/CustomerLogin.html"));
     }
+
     const user = result.rows[0];
     const validPassword = await bcrypt.compare(password, user.password);
     if (validPassword) {
-        req.session.username = username;
+      req.session.username = user.email; // or user.username
       req.session.authenticated = true;
-      return res.sendFile(
-        path.join(__dirname, "../public/CustomerDashboard.html")
-      );
+      return res.redirect("/CustomerDashboard.html"); // Redirection
     } else {
       return res
-        .status(409)
+        .status(401) // Unauthorized
         .sendFile(path.join(__dirname, "../public/CustomerLogin.html"));
     }
   } catch (error) {
-    return res.status(500).json("Server Not responding");
+    console.error(error); // Log error for debugging
+    return res.status(500).json({ message: "Server not responding", error: error.message });
   }
 };
